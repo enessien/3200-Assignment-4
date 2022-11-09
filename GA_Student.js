@@ -13,13 +13,10 @@
 //
 ///\/\/\\\\//\\/\/\/\\/\\///\\////\/\/\\\\//\\/\/\/\\/\\///\\///
 
-// Student TODO: Write this function
-//
 // Note: population is an array of JavaScript objects containing two variables
 //       { gene: [array of integer values], fitness: number }
 //       - population[i].gene    = 1D array representation of the individual (genotype)
 //       - population[i].fitness = fitness of the invidivual (calculated when added to population)
-//
 function GAEvolve(population, settings) 
 {
     // 1. Set up a new array which will hold the next population
@@ -30,7 +27,6 @@ function GAEvolve(population, settings)
     
     // 3. Add the top N elite (top fitness) individuals to the next population
     //    The percentage of elite genes to carry over is given in settings.elitismRatio
-    //    Sorting the population array by fitness is an easy way to do this
     let top = settings.elitismRatio * population.length;
     let e = 0;
     while (e < top)
@@ -41,57 +37,49 @@ function GAEvolve(population, settings)
 
     // 4. Add the required number of random individuals to the next population
     //    The percentage of random genes to carry over is given in settings.randomRatio
-    //    You can get a random gene value by calling settings.getRandomGeneValue()
-    //    Make sure you add the following Object to the array whenever adding an individual
-    //    nextPopulation.push({ gene: geneVariable, fitness: settings.fitnessFunction(geneVariable) });
     let rand = settings.randomRatio * population.length;
-    let r = 0;
-    while (r < rand)
+    for (let r = 0; r < rand; r++)
     {
-        let geneVariable = settings.getRandomGeneValue();
+        let geneVariable = [];
+        // create new complete random gene
+        for (let g=0; g<population[0].gene.length; g++)
+        {
+            // You can get a random gene value by calling settings.getRandomGeneValue()
+            geneVariable.push(settings.getRandomGeneValue());
+        }
+        // Make sure you add the following Object to the array whenever adding an individual
         nextPopulation.push({ gene: geneVariable, fitness: settings.fitnessFunction(geneVariable) });
-        r++;
     }
 
     // 5. Perform the child generation process, which is as follows:
-    //
-    //    // we keep adding children until we fill the next population
-    //    // first, compute the sum of all the fitnesses in the population
-    //    let fitnessSum = calculate sum of previous population fitnesses
-    //
-    //    while (nextPopulation is smaller than settings.populationSize)
-    //       let parent1 = RouletteWheelSelection(population, fitnessSum);
-    //       let parent2 = RouletteWheelSelection(population, fitnessSum);
-    //       let child1  = CrossOver(parent1, parent2, settings);
-    //       let child2  = CrossOver(parent2, parent1, settings);
-    //       MutateIndividual(child1, settings);
-    //       MutateIndividual(child2, settings);
-    //
-    //       Add the children to the population
-    //       Be careful not to add child2 if it would go above the population size
+    // compute the sum of all the fitnesses in the population
     let fitnessSum = 0;
     for (let i=0; i<population.length; i++)
     {
         fitnessSum += population[i];
     }
 
+    // we keep adding children until we fill the next population
+    // the nextPopulation array should always be the same length as settings.populationSize
     while (nextPopulation.length < settings.populationSize)
     {
         let parent1 = RouletteWheelSelection(population, fitnessSum);
         let parent2 = RouletteWheelSelection(population, fitnessSum);
+
         let child1  = CrossOver(parent1, parent2, settings);
         let child2  = CrossOver(parent2, parent1, settings);
+
         MutateIndividual(child1, settings);
         MutateIndividual(child2, settings);
+        // Add the children to the population
         nextPopulation.push(child1);
-        if(nextPopulation.length != settings.populationSize-1)
+        // Be careful not to add child2 if it would go above the population size
+        if(nextPopulation.length != settings.populationSize)
         {
             nextPopulation.push(child2);
         }
     }
 
-    // the nextPopulation array should always be the same length as settings.populationSize
-    // IMPORTANT: Change this to return nextPopulation
     return nextPopulation;
 }
 
@@ -104,38 +92,37 @@ function RouletteWheelSelection(population, fitnessSum)
     return population[selectedIndex];
 }
 
-// Student TODO: Write this function
-//
 // Perform crossover on two parent individuals and return the child individual
 function CrossOver(parent1, parent2, settings) 
 {
     let childGene = [];
     // add the first half of parent1 gene to childGene
-    let half1 = Math.floor(parent1.length-1 / 2); // one left of midpoint if not exact half
+    let half1 = Math.floor((parent1.gene.length-1) / 2); // one left of midpoint if not exact half
     for (let i=0; i<half1; i++)
     {
-        childGene.push(parent1[i]);
+        childGene.push(parent1.gene[i]);
     }
     // add the second half of parent2 gene to childGene
-    let half2 = Math.ceil(parent2.length-1 / 2); // one right of midpoint if not exact half
+    let half2 = Math.ceil((parent2.gene.length) / 2); // one right of midpoint if not exact half
     for (let i=0; i<half2; i++)
     {
-        childGene.push(parent2[i]);
+        childGene.push(parent2.gene[i]);
     }
-    // NOTE: the size of the child gene must equal the size of the parent gene
-    //       be very careful of this when parent size is odd and there's not exact half
-    //       choose 1 left or 1 right of the midpoint, it doesn't matter
-
     return { gene: childGene, fitness: settings.fitnessFunction(childGene) };
 }
 
-// Student TODO: Write this function
-//
 // Mutate an individual based on the settings mutation rate
 function MutateIndividual(individual, settings)
 {
-    // mutation changes a random index of the gene to settings.getRandomGeneValue()
     // mutation chance = if (random number between [0,1] is < settings.mutationRate)
+    let chance = Math.random();
+    if (chance < settings.mutationRate)
+    {
+        // mutation changes a random index of the gene to settings.getRandomGeneValue()
+        // random index in range form 0 to gene length
+        let randIndex = Math.random() * (individual.gene.length) | 0;
+        individual.gene[randIndex] = settings.getRandomGeneValue();
+    }
     // this function modifies the individual and returns nothing
 }
                                                    
