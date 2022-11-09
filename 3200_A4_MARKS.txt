@@ -1,0 +1,33 @@
+Computer Science 3200
+Assignment 4 - GA Sudoku
+
+Student(s): 
+
+Code Style / Modularity / Readability                           05/05 
+
+    - Code has consistent indenting
+    - Functions used where appropriate
+    - Assignment comments removed
+    - Student comments where explanation necessary
+    
+GA Functionality						
+  
+    - GA solves 2x2 sudoku easily				                10/10
+    - GA makes progress toward 3x3 sudoku			            10/10
+    - GA solves all non-sudoku fitnesses for 9x9	            10/10
+    - Graph of fitness over time makes intuitive sense
+
+Individual Functions
+
+    - Elite survival                   				            10/10
+    - Random individuals            				            10/10
+    - Child generation						
+       - Roulette Wheel Selection				                15/15
+       - Crossover 						                        10/10
+       - Mutate individual					                    05/05
+       - Correctly fills up next pop				            05/05
+    - Sudoku Fitness Modified 					                10/10
+      Modifications explained in comment above function    
+
+Max Assignment Mark                                           100/100
+    
