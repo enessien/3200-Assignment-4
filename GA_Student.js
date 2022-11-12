@@ -176,7 +176,7 @@ function SudokuFitness(array)
         {
             vals.add(s.get(r, c));
         }
-        fitness += vals.size;
+        fitness += vals.size * 100;
     }
     // add unique values in each column
     for (let c = 0; c < size; c++) 
@@ -186,7 +186,7 @@ function SudokuFitness(array)
         {
             vals.add(s.get(r, c));
         }
-        fitness += vals.size;
+        fitness += vals.size * 100;
     }
     // add unique values in each square
     let sqsize = Math.round(Math.sqrt(size));
@@ -202,7 +202,24 @@ function SudokuFitness(array)
                     vals.add(s.get(sr * sqsize + r, sc * sqsize + c));
                 }
             }
-            fitness += vals.size;
+            fitness += vals.size * 100;
+        }
+    }
+    for (let r = 0; r < size; r++) 
+    {
+        let unfit = 0;
+        for (let c = 0; c < size; c++) 
+        {
+            unfit = s.numConflicts(r, c);
+            if (unfit == 1){
+                fitness -= 10
+            }
+            if (unfit == 2){
+                fitness -= 20
+            }
+            if (unfit == 3){
+                fitness -= 30
+            }
         }
     }
     return fitness;
