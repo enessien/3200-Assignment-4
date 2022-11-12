@@ -20,7 +20,13 @@
 function GAEvolve(population, settings) 
 {
     // 1. Set up a new array which will hold the next population
+    check = false;
+    if (population[0].gene.length == 16){
+        check = true;
+    }
+    
     let nextPopulation = [];
+    
 
     // 2. Sort the population descending based on fitness 
     population.sort((a, b) => b.fitness - a.fitness);
@@ -35,6 +41,7 @@ function GAEvolve(population, settings)
         e++;
     }
 
+
     // 4. Add the required number of random individuals to the next population
     //    The percentage of random genes to carry over is given in settings.randomRatio
     let rand = settings.randomRatio * population.length;
@@ -45,18 +52,23 @@ function GAEvolve(population, settings)
         for (let g=0; g<population[0].gene.length; g++)
         {
             // You can get a random gene value by calling settings.getRandomGeneValue()
+
             geneVariable.push(settings.getRandomGeneValue());
+            
         }
+  
         // Make sure you add the following Object to the array whenever adding an individual
         nextPopulation.push({ gene: geneVariable, fitness: settings.fitnessFunction(geneVariable) });
     }
+    
+
 
     // 5. Perform the child generation process, which is as follows:
     // compute the sum of all the fitnesses in the population
     let fitnessSum = 0;
     for (let i=0; i<population.length; i++)
     {
-        fitnessSum += population[i];
+        fitnessSum += population[i].fitness;
     }
 
     // we keep adding children until we fill the next population
@@ -64,6 +76,7 @@ function GAEvolve(population, settings)
     while (nextPopulation.length < settings.populationSize)
     {
         let parent1 = RouletteWheelSelection(population, fitnessSum);
+    
         let parent2 = RouletteWheelSelection(population, fitnessSum);
 
         let child1  = CrossOver(parent1, parent2, settings);
@@ -88,7 +101,20 @@ function GAEvolve(population, settings)
 // Select a parent individual from a population based on roulette wheel selection
 function RouletteWheelSelection(population, fitnessSum) 
 {
+    pick = Math.floor(Math.random() * fitnessSum);
+    
     let selectedIndex = 0; // use the algorithm from the slides
+    let current = 0;
+    for (i = 0;i<population.length;i++){
+        current += population[i].fitness;
+        if (current > pick){
+            selectedIndex = i;
+            break;
+        }
+    
+    }
+    
+    
     return population[selectedIndex];
 }
 
@@ -97,17 +123,18 @@ function CrossOver(parent1, parent2, settings)
 {
     let childGene = [];
     // add the first half of parent1 gene to childGene
-    let half1 = Math.floor((parent1.gene.length-1) / 2); // one left of midpoint if not exact half
-    for (let i=0; i<half1; i++)
+    let half = Math.floor((parent1.gene.length-1) / 2); // one left of midpoint if not exact half
+    for (let i=0; i<half; i++)
     {
         childGene.push(parent1.gene[i]);
     }
     // add the second half of parent2 gene to childGene
-    let half2 = Math.ceil((parent2.gene.length) / 2); // one right of midpoint if not exact half
-    for (let i=0; i<half2; i++)
+    let total = parent2.gene.length // one right of midpoint if not exact half
+    for (let i=half; i<total; i++)
     {
         childGene.push(parent2.gene[i]);
     }
+
     return { gene: childGene, fitness: settings.fitnessFunction(childGene) };
 }
 
@@ -120,7 +147,8 @@ function MutateIndividual(individual, settings)
     {
         // mutation changes a random index of the gene to settings.getRandomGeneValue()
         // random index in range form 0 to gene length
-        let randIndex = Math.random() * (individual.gene.length) | 0;
+        let randIndex = Math.floor(Math.random() * (individual.gene.length));
+        console.log(randIndex);
         individual.gene[randIndex] = settings.getRandomGeneValue();
     }
     // this function modifies the individual and returns nothing
