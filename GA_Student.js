@@ -24,10 +24,8 @@ function GAEvolve(population, settings)
     if (population[0].gene.length == 16){
         check = true;
     }
-    
     let nextPopulation = [];
     
-
     // 2. Sort the population descending based on fitness 
     population.sort((a, b) => b.fitness - a.fitness);
     
@@ -40,7 +38,6 @@ function GAEvolve(population, settings)
         nextPopulation.push(population[e]);
         e++;
     }
-
 
     // 4. Add the required number of random individuals to the next population
     //    The percentage of random genes to carry over is given in settings.randomRatio
@@ -56,12 +53,9 @@ function GAEvolve(population, settings)
             geneVariable.push(settings.getRandomGeneValue());
             
         }
-  
         // Make sure you add the following Object to the array whenever adding an individual
         nextPopulation.push({ gene: geneVariable, fitness: settings.fitnessFunction(geneVariable) });
     }
-    
-
 
     // 5. Perform the child generation process, which is as follows:
     // compute the sum of all the fitnesses in the population
@@ -76,7 +70,6 @@ function GAEvolve(population, settings)
     while (nextPopulation.length < settings.populationSize)
     {
         let parent1 = RouletteWheelSelection(population, fitnessSum);
-    
         let parent2 = RouletteWheelSelection(population, fitnessSum);
 
         let child1  = CrossOver(parent1, parent2, settings);
@@ -92,18 +85,15 @@ function GAEvolve(population, settings)
             nextPopulation.push(child2);
         }
     }
-
     return nextPopulation;
 }
 
-// Student TODO: Write this function
-//
 // Select a parent individual from a population based on roulette wheel selection
 function RouletteWheelSelection(population, fitnessSum) 
 {
     pick = Math.floor(Math.random() * fitnessSum);
-    
-    let selectedIndex = 0; // use the algorithm from the slides
+    // use the algorithm from the slides
+    let selectedIndex = 0;
     let current = 0;
     for (i = 0;i<population.length;i++){
         current += population[i].fitness;
@@ -111,10 +101,7 @@ function RouletteWheelSelection(population, fitnessSum)
             selectedIndex = i;
             break;
         }
-    
     }
-    
-    
     return population[selectedIndex];
 }
 
@@ -134,7 +121,6 @@ function CrossOver(parent1, parent2, settings)
     {
         childGene.push(parent2.gene[i]);
     }
-
     return { gene: childGene, fitness: settings.fitnessFunction(childGene) };
 }
 
@@ -154,8 +140,6 @@ function MutateIndividual(individual, settings)
     // this function modifies the individual and returns nothing
 }
                                                    
-// Student TODO: Re-write this function to be more 'clever'
-//
 // See if you can modify this function so that the GA gets
 // closer to solving the Sudoku than the version listed here
 //
@@ -210,6 +194,7 @@ function SudokuFitness(array)
         let unfit = 0;
         for (let c = 0; c < size; c++) 
         {
+            // we reduce the fitness based on the level of unfit
             unfit = s.numConflicts(r, c);
             if (unfit == 1){
                 fitness -= 10
@@ -224,7 +209,6 @@ function SudokuFitness(array)
     }
     return fitness;
 }
-
 
 // Copyright (C) David Churchill - All Rights Reserved
 // COMP3200 - 2022-09 - Assignment 4
