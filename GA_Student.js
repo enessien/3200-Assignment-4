@@ -20,10 +20,7 @@
 function GAEvolve(population, settings) 
 {
     // 1. Set up a new array which will hold the next population
-    check = false;
-    if (population[0].gene.length == 16){
-        check = true;
-    }
+  
     let nextPopulation = [];
     
     // 2. Sort the population descending based on fitness 
